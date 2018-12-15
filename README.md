@@ -30,6 +30,8 @@
      哨兵(sentinel) 的一些设计思路和zookeeper非常类似
      单个哨兵(sentinel)
       
+ ![图图](https://github.com/LxyTe/redis/blob/master/%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6.png)
+ 
       配置哨兵机制的参数(如果没有sentinel.conf文件，可以先进行创建)
 
     # 这个是Redis6379配置内容，其他文件同理新增然后改一下端口即可，26380，和 26381。
