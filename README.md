@@ -151,3 +151,5 @@ AOF 的特性决定了它相对比较安全，如果你期望数据更少的丢�
       PUNSUBSCRIBE [pattern [pattern ...]]  退订所有给定模式的频道。
       SUBSCRIBE channel [channel ...]  订阅给定的一个或多个频道的信息。
       UNSUBSCRIBE [channel [channel ...]]  指退订给定的频道。
+  
+  #### 集群
