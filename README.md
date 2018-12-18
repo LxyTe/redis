@@ -161,9 +161,50 @@ AOF 的特性决定了它相对比较安全，如果你期望数据更少的丢�
   
      首先要说的是，每一个节点都存有这个集群所有主节点以及从节点的信息。
 　它们之间通过互相的ping-pong判断是否节点可以连接上。如果有一半以上的节点去ping一个节点的时候没有回应，集群就认为这个节点宕机了，然后去连接它的备用节点。如果某个节点和所有从节点全部挂掉，我们集群就进入faill状态。还有就是如果有一半以上的主节点宕机，那么我们集群同样进入发力了状态。这就是我们的redis的投票机制，具体原理如下图所示
+  ![兔兔](https://github.com/LxyTe/redis/blob/master/%E9%9B%86%E7%BE%A4%E7%89%88%E5%93%A8%E5%85%B5.png)
   
+  搭建集群方式(3主3从，3个主机搭起主服务集群，3个从机防止，主服务挂掉，从服务顶上)
+  注意，修改 redis.conf 配置和单点唯一区别是下图部分，其余还是常规的这几项：
+
+     port 9001（每个节点的端口号）
+     daemonize yes
+     bind 192.168.119.131（绑定当前机器 IP）
+     dir /usr/local/redis-cluster/9001/data/（数据文件存放位置）
+     pidfile /var/run/redis_9001.pid（pid 9001和port要对应）
+     cluster-enabled yes（启动集群模式）
+     cluster-config-file nodes9001.conf（9001和port要对应）
+     cluster-node-timeout 15000
+     appendonly yes   (aof配置)
+     剩下5个修改端口号即可
+     
+     由于 Redis 集群需要使用 ruby 命令，所以我们需要安装 ruby 和相关接口。
+     yum install ruby yum install rubygems gem install redis (百度上方法众多，自行下载)
   
-   
+    下载之后(redis-trib.rb 建议放在redis同一目录下)
+    安装目录/bin/redis-trib.rb create --replicas 1 192.168.212.150:9001 192.168.212.150:9002 192.168.212.150:9003 192.168.212.150:9004 192.168.212.150:9005 192.168.212.150:9006(命令解释如下)
+    调用 ruby 命令来进行创建集群，--replicas 1 表示主从复制比例为 1:1，即一个主节点对应一个从节点；然后，默认给我们分配好了每个主节点和对应从节点服务，以及 solt 的大小，因为在 Redis 集群中有且仅有 16383 个 solt ，默认情况会给我们平均分配，当然你可以指定，后续的增减节点也可以重新分配
           
+       spring boot 整合集群
+       spring:
+      redis:
+         database: 0
+        
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+    timeout: 10000
+    cluster:
+      nodes:
+        - 192.168.212.149:9001
+        - 192.168.212.149:9002
+        - 192.168.212.149:9003
+        - 192.168.212.149:9004
+        - 192.168.212.149:9005
+        - 192.168.212.149:9006
+        
+        单机(#    host: 132.232.44.194 port: 6379   password: 123456)
     
         
