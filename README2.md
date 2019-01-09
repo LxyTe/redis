@@ -133,7 +133,6 @@
  
  }
  
-
     public boolean testLogin(String ip) {
     String value = jedis.get(ip);
     if (value == null) {
@@ -153,3 +152,37 @@
        }
      return true;
       }
+ ##### 监控变量在事务执行时是否被修改
+
+    // 指定Redis数据库连接的IP和端口
+    String host = "192.168.33.130";
+    int port = 6379;
+    Jedis jedis = new Jedis(host, port);
+  
+
+    //监控变量a在一段时间内是否被修改，若没有，则执行事务，若被修改，则事务不执行
+
+    @Test
+    public void test4() throws Exception {
+    //监控变量a，在事务执行后watch功能也结束
+    jedis.watch("a");
+    //需要数据库中先有a，并且a的值为字符串数字
+    String value = jedis.get("a");
+    int parseInt = Integer.parseInt(value);
+    parseInt++;
+    System.out.println("线程开始休息。。。");
+    Thread.sleep(5000);
+ 
+    //开启事务
+    Transaction transaction = jedis.multi();
+    transaction.set("a", parseInt + "");
+    //执行事务
+    List<Object> exec = transaction.exec();
+    if (exec == null) {
+        System.out.println("事务没有执行.....");
+    } else {
+        System.out.println("正常执行......");
+    }
+    }
+  
+  ##### 各种计数
